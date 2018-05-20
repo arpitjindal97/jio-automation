@@ -10,6 +10,7 @@ before_script:
     - env | sort
     - export QT_PKG_CONFIG=true
     - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
+    - sudo apt-get install qt5
     - go get -u -v github.com/therecipe/qt/cmd/...
     - docker pull therecipe/qt:linux
     - docker pull therecipe/qt:windows_64_static
