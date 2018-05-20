@@ -1,0 +1,23 @@
+language: go
+
+services:
+    - docker
+
+go:
+    - "1.10"
+
+before_script:
+    - env | sort
+    - export QT_PKG_CONFIG=true
+    - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
+    - go get -u -v github.com/therecipe/qt/cmd/...
+    - docker pull therecipe/qt:linux
+    - docker pull therecipe/qt:windows_64_static
+
+script:
+    - qtdeploy -docker build linux
+    - qtdeploy -docker build windows_64_static
+
+after_script:
+    - ls -alh deploy/linux
+    - ls -alh deploy/windows
