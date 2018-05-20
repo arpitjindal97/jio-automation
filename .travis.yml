@@ -3,15 +3,37 @@ language: go
 services:
     - docker
 
+dist:
+    - trusty
+
+sudo:
+    required
+
 go:
     - "1.10"
 
-before_script:
+before_install:
     - env | sort
+    - sudo apt-get update
+    - sudo apt-get -y install   build-essential \
+                                libfontconfig1 \
+                                libglu1-mesa-dev \
+                                libpulse-dev \
+                                libglib2.0-dev\
+                                mesa-common-dev
+    - wget http://download.qt.io/official_releases/qt/5.7/5.7.0/qt-opensource-linux-x64-5.7.0.run
+    - chmod +x qt-opensource-linux-x64-5.7.0.run
+    - ./qt-opensource-linux-x64-5.7.0.run
+
+install:
     - export QT_PKG_CONFIG=true
-    - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
-    - sudo apt-get install qt5
+    - export QT_DIR="$HOME/Qt5.10.0"
+    - mkdir ~/Qt5.10.0
     - go get -u -v github.com/therecipe/qt/cmd/...
+    - sudo chown -R $(whoami) /usr/local/bin
+    - qtsetup
+
+before_script:
     - docker pull therecipe/qt:linux
     - docker pull therecipe/qt:windows_64_static
 
