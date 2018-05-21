@@ -12,7 +12,6 @@ go:
 before_install:
     - env | sort
     - sudo apt-get update
-    - sudo apt-get -y install qtbase5-dev qtbase5-doc
     - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
 
 install:
