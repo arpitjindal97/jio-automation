@@ -20,7 +20,7 @@ before_install:
     - wget https://raw.githubusercontent.com/benlau/qtci/master/bin/extract-qt-installer
     - chmod +x extract-qt-installer
     - ./extract-qt-installer qt-opensource-linux-x64-5.10.0.run ~/Qt
-    - export PATH=~/Qt/5.10.0/gcc_64/bin:$PATH
+    - sudo apt-get -y install qtbase5-dev qtbase5-doc
     - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
 
 install:
@@ -29,7 +29,6 @@ install:
     - mkdir ~/Qt5.10.0
     - go get -u -v github.com/therecipe/qt/cmd/...
     - sudo chown -R $(whoami) /usr/local/bin
-    - qtsetup
 
 before_script:
     - docker pull therecipe/qt:linux
