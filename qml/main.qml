@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 1.4
 import QtQuick.Controls 2.1
+import CustomQmlTypes 1.0
 
 Item {
     id: window
@@ -71,6 +72,7 @@ Item {
                     font.family: "Arial"
                     anchors.leftMargin: 30
                     focusPolicy: Qt.StrongFocus
+                    onClicked: tableview.model.openfile("sample.xlsx")
                 }
 
                 TextField {
@@ -92,8 +94,33 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 8
                 anchors.left: parent.left
-                anchors.leftMargin: 12
+                anchors.leftMargin: 8
                 transformOrigin: Item.Center
+                model: CustomTableModel{}
+
+                TableViewColumn {
+                        role: "IMEI"
+                        title: role
+                    }
+
+                TableViewColumn {
+                        role: "Distributor"
+                        title: role
+                    }
+                TableViewColumn {
+                        role: "Retailer"
+                        title: role
+                    }
+
+                TableViewColumn {
+                        role: "Head1"
+                        title: role
+                    }
+
+                TableViewColumn {
+                        role: "Date"
+                        title: role
+                    }
             }
 
             Item {

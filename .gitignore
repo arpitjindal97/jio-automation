@@ -1,3 +1,5 @@
 deploy/
 linux/
 rcc*
+moc*
+sample.xlsx
