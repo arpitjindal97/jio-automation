@@ -6,29 +6,17 @@ services:
 dist:
     - trusty
 
-sudo:
-    required
-
 go:
     - "1.10"
 
 before_install:
     - env | sort
     - sudo apt-get update
-    - wget  https://download.qt.io/official_releases/qt/5.10/5.10.0/qt-opensource-linux-x64-5.10.0.run
-    - chmod +x qt-opensource-linux-x64-5.10.0.run
-    - wget https://raw.githubusercontent.com/benlau/qtci/master/bin/extract-qt-installer
-    - chmod +x extract-qt-installer
-    - ./extract-qt-installer qt-opensource-linux-x64-5.10.0.run ~/Qt
     - sudo apt-get -y install qtbase5-dev qtbase5-doc
     - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
 
 install:
-    - export QT_PKG_CONFIG=true
-    - export QT_DIR="$HOME/Qt5.10.0"
-    - mkdir ~/Qt5.10.0
     - go get -u -v github.com/therecipe/qt/cmd/...
-    - sudo chown -R $(whoami) /usr/local/bin
 
 before_script:
     - docker pull therecipe/qt:linux
