@@ -5,10 +5,7 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-var tabledata = []TableItem{
-	{"john", "doe", "third", "fourth", "fifth"},
-	{"john", "bob", "third", "fourth", "fifth"},
-}
+var tabledata = []TableItem{}
 
 var dataModel *CustomTableModel
 

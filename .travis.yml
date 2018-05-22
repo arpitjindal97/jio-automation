@@ -13,7 +13,10 @@ before_install:
     - env | sort
     - sudo apt-get update
     - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
+
+install:
     - go get -u -v github.com/therecipe/qt/cmd/...
+    - go get github.com/tealeg/xlsx
 
 before_script:
     - docker pull therecipe/qt:linux
