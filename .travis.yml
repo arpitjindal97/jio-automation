@@ -20,7 +20,7 @@ install:
     - go get -u github.com/gobuffalo/packr/...
     - go get github.com/tebeka/selenium
 
-after_install:
+before_script:
     - mkdir driver
     - cd driver
     - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
@@ -32,8 +32,6 @@ after_install:
     - rm chromedriver_win32.zip
     - mv chromedriver.exe chromedriver_windows
     - cd ..
-
-before_script:
     - docker pull therecipe/qt:linux
     - docker pull therecipe/qt:windows_64_static
 
