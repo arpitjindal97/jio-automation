@@ -13,13 +13,6 @@ const (
 	JCNum
 )
 
-type TableItem struct {
-	IMEI        string
-	Distributor string
-	Retailer    string
-	JCNum       string
-}
-
 type CustomTableModel struct {
 	core.QAbstractTableModel
 

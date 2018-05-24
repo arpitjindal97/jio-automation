@@ -2,39 +2,50 @@ package main
 
 import (
 	"fmt"
-	"github.com/tealeg/xlsx"
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"strconv"
 )
+
+type TableItem struct {
+	IMEI        string
+	Distributor string
+	Retailer    string
+	JCNum       string
+}
 
 var dataModel *CustomTableModel
 var username = ""
 var password = ""
+var excelFile string
 
 func OpenFile(filePath string) {
 
 	fmt.Println(filePath)
+	excelFile = filePath
 
-	xlFile, _ := xlsx.OpenFile(filePath)
+	xlsx, _ := excelize.OpenFile(excelFile)
 
-	for _, sheet := range xlFile.Sheets {
-		for _, row := range sheet.Rows {
-			for _, cell := range row.Cells {
-				text := cell.String()
+	sheetName := xlsx.GetSheetName(1)
 
-				if username == "" {
-					username = text
-				} else if password == "" {
-					password = text
-				} else {
+	rows := xlsx.GetRows(sheetName)
 
-					item := TableItem{text, "", "", ""}
+	for _, row := range rows {
+		for _, cell := range row {
 
-					dataModel.add(item)
-				}
-				break
+			if username == "" {
+				username = cell
+			} else if password == "" {
+				password = cell
+			} else {
+
+				item := TableItem{cell, "", "", ""}
+
+				dataModel.add(item)
 			}
+			break
 		}
-		break
 	}
+
 }
 
 func SetModalInstance(m *CustomTableModel) {
@@ -49,9 +60,17 @@ func StartProcess() {
 	service, wd := SetupSelenium()
 	defer service.Stop()
 
+	xlsx, _ := excelize.OpenFile(excelFile)
+	sheet := xlsx.GetSheetName(1)
+
 	for index, item := range dataModel.modelData {
 		item := SearchIMEI(item.IMEI, wd)
 		dataModel.edit(index, item)
+
+		xlsx.SetCellValue(sheet, "B"+strconv.Itoa(index+3), item.Distributor)
+		xlsx.SetCellValue(sheet, "C"+strconv.Itoa(index+3), item.Retailer)
+		xlsx.SetCellValue(sheet, "D"+strconv.Itoa(index+3), item.JCNum)
+		xlsx.Save()
 	}
 
 }

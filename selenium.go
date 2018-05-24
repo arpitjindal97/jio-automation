@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/tebeka/selenium"
-	"github.com/tebeka/selenium/chrome"
 	"net"
 	"time"
 )
@@ -39,7 +38,7 @@ func SearchIMEI(number string, wd selenium.WebDriver) TableItem {
 func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
 
 	jio_url := "https://partnercentral.jioconnect.com/group/guest/home"
-	browserPath := GetChromeBrowserPath()
+	//browserPath := GetChromeBrowserPath()
 	port, err := pickUnusedPort()
 
 	var opts []selenium.ServiceOption
@@ -53,13 +52,13 @@ func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
 	caps := selenium.Capabilities{
 		"browserName": "chrome",
 	}
-	chrCaps := chrome.Capabilities{
-		Path: browserPath,
-		Args: []string{
-			"--no-sandbox",
-		},
-	}
-	caps.AddChrome(chrCaps)
+	//chrCaps := chrome.Capabilities{
+	//	Path: browserPath,
+	//	Args: []string{
+	//		"--no-sandbox",
+	//	},
+	//}
+	//caps.AddChrome(chrCaps)
 
 	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://127.0.0.1:%d/wd/hub", port))
 	if err != nil {

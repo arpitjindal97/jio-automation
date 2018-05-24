@@ -14,9 +14,9 @@ func GetChromeDriverPath() string {
 
 	data, _ := box.MustBytes("chromedriver_windows")
 
-	ioutil.WriteFile(os.TempDir()+"/chromedriver", data, 0744)
+	ioutil.WriteFile(os.TempDir()+"\\chromedriver.exe", data, 0744)
 
-	return os.TempDir() + "/chromedriver"
+	return os.TempDir() + "\\chromedriver.exe"
 }
 
 func GetChromeBrowserPath() string {

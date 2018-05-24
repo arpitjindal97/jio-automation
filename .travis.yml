@@ -16,7 +16,7 @@ before_install:
 
 install:
     - go get -u -v github.com/therecipe/qt/cmd/...
-    - go get github.com/tealeg/xlsx
+    - go get github.com/360EntSecGroup-Skylar/excelize
     - go get -u github.com/gobuffalo/packr/...
     - go get github.com/tebeka/selenium
 
