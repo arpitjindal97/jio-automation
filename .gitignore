@@ -1,5 +1,6 @@
 deploy/
 linux/
+driver/
 rcc*
 moc*
 sample.xlsx

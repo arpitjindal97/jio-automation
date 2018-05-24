@@ -144,6 +144,7 @@ Item {
                     anchors.topMargin: 8
                     anchors.left: parent.left
                     anchors.leftMargin: 120
+                    onClicked: tableview.model.start()
                 }
 
                 Button {

@@ -5,9 +5,9 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-var tabledata = []TableItem{}
-
 var dataModel *CustomTableModel
+var username = ""
+var password = ""
 
 func OpenFile(filePath string) {
 
@@ -20,10 +20,16 @@ func OpenFile(filePath string) {
 			for _, cell := range row.Cells {
 				text := cell.String()
 
-				item := TableItem{text, "", "", "", ""}
+				if username == "" {
+					username = text
+				} else if password == "" {
+					password = text
+				} else {
 
-				dataModel.add(item)
+					item := TableItem{text, "", "", "", ""}
 
+					dataModel.add(item)
+				}
 				break
 			}
 		}
@@ -33,4 +39,19 @@ func OpenFile(filePath string) {
 
 func SetModalInstance(m *CustomTableModel) {
 	dataModel = m
+}
+
+func StartProcess() {
+
+	fmt.Println("Username : " + username)
+	fmt.Println("Password: " + password)
+
+	service, wd := SetupSelenium()
+	defer service.Stop()
+
+	for index, item := range dataModel.modelData {
+		item := SearchIMEI(item.IMEI, wd)
+		dataModel.edit(index, item)
+	}
+
 }

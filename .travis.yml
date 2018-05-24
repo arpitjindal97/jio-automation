@@ -17,14 +17,31 @@ before_install:
 install:
     - go get -u -v github.com/therecipe/qt/cmd/...
     - go get github.com/tealeg/xlsx
+    - go get github.com/gobuffalo/packr
+    - go get github.com/tebeka/selenium
+
+after_install:
+    - mkdir driver
+    - cd driver
+    - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip
+    - rm chromedriver_linux64.zip
+    - mv chromedriver chromedriver_linux
+    - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_win32.zip
+    - unzip chromedriver_win32.zip
+    - rm chromedriver_win32.zip
+    - mv chromedriver.exe chromedriver_windows
+    - cd ..
 
 before_script:
     - docker pull therecipe/qt:linux
     - docker pull therecipe/qt:windows_64_static
 
 script:
-    - qtdeploy -docker build linux
-    - qtdeploy -docker build windows_64_static
+    - packr -i linux.go
+    - qtdeploy -docker -tags linux build linux
+    - packr -i windows.go
+    - qtdeploy -docker -tags windows build windows_64_static
 
 after_script:
     - ls -alh deploy/linux

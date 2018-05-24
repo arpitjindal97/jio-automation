@@ -15,11 +15,11 @@ const (
 )
 
 type TableItem struct {
-	imei        string
-	distributor string
-	retailer    string
-	head1       string
-	date        string
+	IMEI        string
+	Distributor string
+	Retailer    string
+	Head1       string
+	Date        string
 }
 
 type CustomTableModel struct {
@@ -27,16 +27,16 @@ type CustomTableModel struct {
 
 	_ func() `constructor:"init"`
 
-	_ func()                                  `signal:"remove,auto"`
-	_ func(item TableItem)                    `signal:"add,auto"`
-	_ func(firstName string, lastName string) `signal:"edit,auto"`
-	_ func(filePath string)                   `signal:"openfile,auto"`
+	_ func()                          `signal:"remove,auto"`
+	_ func(item TableItem)            `signal:"add,auto"`
+	_ func(index int, item TableItem) `signal:"edit,auto"`
+	_ func(filePath string)           `signal:"openfile,auto"`
+	_ func()                          `signal:"start,auto"`
 
 	modelData []TableItem
 }
 
 func (m *CustomTableModel) init() {
-	m.modelData = tabledata
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
@@ -65,15 +65,15 @@ func (m *CustomTableModel) data(index *core.QModelIndex, role int) *core.QVarian
 	item := m.modelData[index.Row()]
 	switch role {
 	case IMEI:
-		return core.NewQVariant14(item.imei)
+		return core.NewQVariant14(item.IMEI)
 	case Distributor:
-		return core.NewQVariant14(item.distributor)
+		return core.NewQVariant14(item.Distributor)
 	case Retailer:
-		return core.NewQVariant14(item.retailer)
+		return core.NewQVariant14(item.Retailer)
 	case Head1:
-		return core.NewQVariant14(item.head1)
+		return core.NewQVariant14(item.Head1)
 	case Date:
-		return core.NewQVariant14(item.date)
+		return core.NewQVariant14(item.Date)
 
 	}
 	return core.NewQVariant()
@@ -94,15 +94,20 @@ func (m *CustomTableModel) add(item TableItem) {
 	m.EndInsertRows()
 }
 
-func (m *CustomTableModel) edit(firstName string, lastName string) {
+func (m *CustomTableModel) edit(index int, item TableItem) {
 	if len(m.modelData) == 0 {
 		return
 	}
-	//m.modelData[len(m.modelData)-1] = TableItem{firstName, lastName}
-	//m.DataChanged(m.Index(len(m.modelData)-1, 0, core.NewQModelIndex()), m.Index(len(m.modelData)-1, 1, core.NewQModelIndex()), []int{FirstName, LastName})
+	m.modelData[index] = item
+	m.DataChanged(m.Index(index, 0, core.NewQModelIndex()), m.Index(index, 1, core.NewQModelIndex()),
+		[]int{IMEI, Distributor, Retailer, Head1, Date})
 }
 
 func (m *CustomTableModel) openfile(filePath string) {
 	SetModalInstance(m)
 	OpenFile(filePath)
+}
+
+func (m *CustomTableModel) start() {
+	go StartProcess()
 }
