@@ -5,44 +5,41 @@ import (
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
 	"net"
-	"os"
-	"os/exec"
 	"time"
 )
 
 func SearchIMEI(number string, wd selenium.WebDriver) TableItem {
 	wd.Refresh()
 
-	time.Sleep(4 * time.Second)
+	time.Sleep(3 * time.Second)
 	elem, _ := wd.FindElement(selenium.ByID, "inputidfrag-inner")
 
 	elem.SendKeys(number)
+	time.Sleep(1 * time.Second)
 	elem.SendKeys(selenium.EnterKey)
+
+	elem, _ = wd.FindElement(selenium.ByXPATH, "//span[text()='RRL Dispatch']")
+	id, _ := elem.GetAttribute("id")
+	id = "__text9-__xmlview1--tabid-" + id[len(id)-1:]
+	elem, _ = wd.FindElement(selenium.ByID, id)
+	jcnum, _ := elem.GetAttribute("innerHTML")
 
 	elem, _ = wd.FindElement(selenium.ByID, "__text9-__xmlview1--tabid-0")
 	elem.Click()
 
-	fmt.Println("IMEI : " + number)
-
 	elem, _ = wd.FindElement(selenium.ByID, "__xmlview2--sitedsc-inner")
 	dist, _ := elem.GetAttribute("value")
-	fmt.Println("Distributor Name: " + dist)
 
 	elem, _ = wd.FindElement(selenium.ByID, "__xmlview2--custmr-inner")
 	retail, _ := elem.GetAttribute("value")
-	fmt.Println("Retailer Name: " + retail)
 
-	elem, _ = wd.FindElement(selenium.ByID, "__xmlview2--dte-inner")
-	date, _ := elem.GetAttribute("value")
-	fmt.Println("Date: " + date)
-
-	return TableItem{number, dist, retail, "", date}
+	return TableItem{number, dist, retail, jcnum}
 }
 
 func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
 
 	jio_url := "https://partnercentral.jioconnect.com/group/guest/home"
-	browserPath := GetBrowserPath("chromium")
+	browserPath := GetChromeBrowserPath()
 	port, err := pickUnusedPort()
 
 	var opts []selenium.ServiceOption
@@ -127,7 +124,6 @@ func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("imei search box found")
 
 	return service, wd
 
@@ -148,15 +144,4 @@ func pickUnusedPort() (int, error) {
 		return 0, err
 	}
 	return port, nil
-}
-
-func GetBrowserPath(browser string) string {
-	if _, err := os.Stat(browser); err != nil {
-		path, err := exec.LookPath(browser)
-		if err != nil {
-			panic("Browser binary path not found")
-		}
-		return path
-	}
-	return browser
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/gobuffalo/packr"
 	"io/ioutil"
 	"os"
+	"os/exec"
 )
 
 func GetChromeDriverPath() string {
@@ -19,7 +20,8 @@ func GetChromeDriverPath() string {
 }
 
 func GetChromeBrowserPath() string {
-	if _, err := os.Stat("chrome"); err != nil {
+	browser := "chrome"
+	if _, err := os.Stat(browser); err != nil {
 		path, err := exec.LookPath(browser)
 		if err != nil {
 			panic("Browser binary path not found")

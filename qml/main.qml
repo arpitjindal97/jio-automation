@@ -113,13 +113,8 @@ Item {
                     }
 
                 TableViewColumn {
-                        role: "Head1"
-                        title: role
-                    }
-
-                TableViewColumn {
-                        role: "Date"
-                        title: role
+                        role: "JCNum"
+                        title: "JC Number"
                     }
             }
 

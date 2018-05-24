@@ -10,16 +10,14 @@ const (
 	IMEI = int(core.Qt__UserRole) + 1<<iota
 	Distributor
 	Retailer
-	Head1
-	Date
+	JCNum
 )
 
 type TableItem struct {
 	IMEI        string
 	Distributor string
 	Retailer    string
-	Head1       string
-	Date        string
+	JCNum       string
 }
 
 type CustomTableModel struct {
@@ -48,8 +46,7 @@ func (m *CustomTableModel) roleNames() map[int]*core.QByteArray {
 		IMEI:        core.NewQByteArray2("IMEI", -1),
 		Distributor: core.NewQByteArray2("Distributor", -1),
 		Retailer:    core.NewQByteArray2("Retailer", -1),
-		Head1:       core.NewQByteArray2("Head1", -1),
-		Date:        core.NewQByteArray2("Date", -1),
+		JCNum:       core.NewQByteArray2("JCNum", -1),
 	}
 }
 
@@ -70,10 +67,8 @@ func (m *CustomTableModel) data(index *core.QModelIndex, role int) *core.QVarian
 		return core.NewQVariant14(item.Distributor)
 	case Retailer:
 		return core.NewQVariant14(item.Retailer)
-	case Head1:
-		return core.NewQVariant14(item.Head1)
-	case Date:
-		return core.NewQVariant14(item.Date)
+	case JCNum:
+		return core.NewQVariant14(item.JCNum)
 
 	}
 	return core.NewQVariant()
@@ -100,7 +95,7 @@ func (m *CustomTableModel) edit(index int, item TableItem) {
 	}
 	m.modelData[index] = item
 	m.DataChanged(m.Index(index, 0, core.NewQModelIndex()), m.Index(index, 1, core.NewQModelIndex()),
-		[]int{IMEI, Distributor, Retailer, Head1, Date})
+		[]int{IMEI, Distributor, Retailer, JCNum})
 }
 
 func (m *CustomTableModel) openfile(filePath string) {

@@ -26,7 +26,7 @@ func OpenFile(filePath string) {
 					password = text
 				} else {
 
-					item := TableItem{text, "", "", "", ""}
+					item := TableItem{text, "", "", ""}
 
 					dataModel.add(item)
 				}
