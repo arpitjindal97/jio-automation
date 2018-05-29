@@ -10,20 +10,27 @@ import (
 func SearchIMEI(number string, wd selenium.WebDriver) TableItem {
 	wd.Refresh()
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(6 * time.Second)
 	elem, _ := wd.FindElement(selenium.ByID, "inputidfrag-inner")
 
 	elem.SendKeys(number)
-	time.Sleep(1 * time.Second)
+	//time.Sleep(2 * time.Second)
 	elem.SendKeys(selenium.EnterKey)
 
-	elem, _ = wd.FindElement(selenium.ByXPATH, "//span[text()='RRL Dispatch']")
-	id, _ := elem.GetAttribute("id")
-	id = "__text9-__xmlview1--tabid-" + id[len(id)-1:]
-	elem, _ = wd.FindElement(selenium.ByID, id)
-	jcnum, _ := elem.GetAttribute("innerHTML")
+	jcnum := ""
 
-	elem, _ = wd.FindElement(selenium.ByID, "__text9-__xmlview1--tabid-0")
+	elem, err := wd.FindElement(selenium.ByXPATH, "//span[text()='RRL Dispatch']")
+	if err == nil {
+		id, _ := elem.GetAttribute("id")
+		id = "__text9-__xmlview1--tabid-" + id[len(id)-1:]
+		elem, _ = wd.FindElement(selenium.ByID, id)
+		jcnum, _ = elem.GetAttribute("innerHTML")
+	}
+
+	elem, err = wd.FindElement(selenium.ByXPATH, "//span[text()='Dispatch']")
+	if err != nil {
+		return TableItem{number, "", "", jcnum}
+	}
 	elem.Click()
 
 	elem, _ = wd.FindElement(selenium.ByID, "__xmlview2--sitedsc-inner")
@@ -70,9 +77,9 @@ func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
 	if err != nil {
 		panic(err)
 	}
-	wd.SetAsyncScriptTimeout(10 * time.Second)
-	wd.SetImplicitWaitTimeout(10 * time.Second)
-	wd.SetPageLoadTimeout(10 * time.Second)
+	wd.SetAsyncScriptTimeout(15 * time.Second)
+	wd.SetImplicitWaitTimeout(4 * time.Second)
+	wd.SetPageLoadTimeout(15 * time.Second)
 
 	elem, err := (wd.FindElement(selenium.ByName, "username"))
 	if err != nil {
