@@ -4,42 +4,97 @@ import (
 	"fmt"
 	"github.com/tebeka/selenium"
 	"net"
+	"strconv"
+	"strings"
 	"time"
 )
 
 func SearchIMEI(number string, wd selenium.WebDriver) TableItem {
-	wd.Refresh()
 
-	time.Sleep(6 * time.Second)
-	elem, _ := wd.FindElement(selenium.ByID, "inputidfrag-inner")
+	elem, _ := GetElement(wd, selenium.ByID, "idMenu")
 
+	elem.Click()
+
+	time.Sleep(2 * time.Second)
+	elem, _ = GetElement(wd, selenium.ByID, "__panel0-__shell1-5-CollapsedImg")
+
+	elem.Click()
+
+	time.Sleep(2 * time.Second)
+	elem, _ = GetElement(wd, selenium.ByID, "__item1-__list0-__shell1-5-6")
+
+	elem.Click()
+
+	time.Sleep(2 * time.Second)
+	elem, _ = GetElement(wd, selenium.ByID, "inputidfrag-inner")
+
+	time.Sleep(1 * time.Second)
 	elem.SendKeys(number)
-	//time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	elem.SendKeys(selenium.EnterKey)
 
 	jcnum := ""
-
-	elem, err := wd.FindElement(selenium.ByXPATH, "//span[text()='RRL Dispatch']")
+	elem, err := GetElement(wd, selenium.ByXPATH, "//span[text()='RRL Dispatch']")
 	if err == nil {
 		id, _ := elem.GetAttribute("id")
-		id = "__text9-__xmlview1--tabid-" + id[len(id)-1:]
-		elem, _ = wd.FindElement(selenium.ByID, id)
+
+		pos := strings.Index(id, "-")
+		num, _ := strconv.Atoi(id[6:pos])
+		num = num + 1
+		id = id[:6] + strconv.Itoa(num) + id[pos:]
+
+		elem, _ = GetElement(wd, selenium.ByID, id)
 		jcnum, _ = elem.GetAttribute("innerHTML")
 	}
 
-	elem, err = wd.FindElement(selenium.ByXPATH, "//span[text()='Dispatch']")
+	var dist string
+	elem, err = GetElement(wd, selenium.ByXPATH, "//span[text()='Receipt']")
+	if err == nil {
+		id, _ := elem.GetAttribute("id")
+
+		pos := strings.Index(id, "-")
+		num, _ := strconv.Atoi(id[6:pos])
+		num = num + 1
+		id = id[:6] + strconv.Itoa(num) + id[pos:]
+
+		elem, _ = wd.FindElement(selenium.ByID, id)
+		fmt.Println("dist : " + dist)
+	}
+
+	elem, err = GetElement(wd, selenium.ByXPATH, "//span[text()='Dispatch']")
 	if err != nil {
 		return TableItem{number, "", "", jcnum}
 	}
 	elem.Click()
 
-	elem, _ = wd.FindElement(selenium.ByID, "__xmlview2--sitedsc-inner")
-	dist, _ := elem.GetAttribute("value")
-
-	elem, _ = wd.FindElement(selenium.ByID, "__xmlview2--custmr-inner")
+	elem, _ = GetElement(wd, selenium.ByXPATH, "//label[text()='Receiver']")
+	temp, _ := elem.GetAttribute("for")
+	elem, _ = GetElement(wd, selenium.ByID, temp)
 	retail, _ := elem.GetAttribute("value")
 
+	elem, _ = GetElement(wd, selenium.ByID, "idHome")
+	elem.Click()
+
+	time.Sleep(1 * time.Second)
 	return TableItem{number, dist, retail, jcnum}
+}
+
+func GetElement(wd selenium.WebDriver, findBy, pattern string) (selenium.WebElement, error) {
+
+	elementExists := func(wd selenium.WebDriver) (bool, error) {
+		_, err := wd.FindElement(findBy, pattern)
+		if err != nil {
+			return false, nil
+		}
+
+		return true, nil
+	}
+	timeout, _ := time.ParseDuration("6s")
+	interval, _ := time.ParseDuration("1s")
+	wd.WaitWithTimeoutAndInterval(elementExists, timeout, interval)
+
+	return wd.FindElement(findBy, pattern)
+
 }
 
 func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
@@ -78,29 +133,25 @@ func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
 		panic(err)
 	}
 	wd.SetAsyncScriptTimeout(15 * time.Second)
-	wd.SetImplicitWaitTimeout(4 * time.Second)
 	wd.SetPageLoadTimeout(15 * time.Second)
 
-	elem, err := (wd.FindElement(selenium.ByName, "username"))
+	elem, err := GetElement(wd, selenium.ByName, "username")
 	if err != nil {
 		panic(err)
 	}
 
 	elem.SendKeys(username)
-	elem, err = (wd.FindElement(selenium.ByName, "password"))
-	if err != nil {
-		panic(err)
-	}
+	elem, err = GetElement(wd, selenium.ByName, "password")
 	elem.SendKeys(password)
 
-	elem, _ = wd.FindElement(selenium.ByXPATH, "//input[@type='submit']")
+	elem, _ = GetElement(wd, selenium.ByXPATH, "//input[@type='submit']")
 
 	elem.Click()
 
-	elem, err = wd.FindElement(selenium.ByXPATH, "//a[@title='"+username+"']")
+	elem, err = GetElement(wd, selenium.ByXPATH, "//a[@title='"+username+"']")
 
 	if err != nil {
-		fmt.Println("Error loggin in")
+		fmt.Println("Error logging in")
 		panic(err)
 	}
 
@@ -108,28 +159,7 @@ func SetupSelenium() (*selenium.Service, selenium.WebDriver) {
 
 	wd.Get("https://fiori.jioconnect.com/sap/bc/ui5_ui5/sap/zehys_dashboard/index.html")
 
-	time.Sleep(3 * time.Second)
-
-	elem, _ = wd.FindElement(selenium.ByID, "__shell1-header-hdr-begin")
-
-	elem.Click()
-
-	time.Sleep(2 * time.Second)
-	elem, _ = wd.FindElement(selenium.ByID, "__panel0-__shell1-5-CollapsedImg")
-
-	elem.Click()
-
-	time.Sleep(2 * time.Second)
-	elem, err = wd.FindElement(selenium.ByID, "__item1-__list0-__shell1-5-6")
-
-	elem.Click()
-	time.Sleep(3 * time.Second)
-
-	elem, err = wd.FindElement(selenium.ByID, "inputidfrag-inner")
-
-	if err != nil {
-		panic(err)
-	}
+	elem, _ = GetElement(wd, selenium.ByID, "idMenu")
 
 	return service, wd
 
